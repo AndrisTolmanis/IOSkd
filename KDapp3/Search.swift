@@ -12,13 +12,14 @@ class Search: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var jsonData = [[String:String]]()
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.tvwList.rowHeight = 60
     }
-    
+    // React when the search term is changed
     @IBAction func txtSearchChanged(_ sender: Any) {
         page = 0
         btnSearch.setTitle("Search", for: .normal)
     }
-    
+    // Execute when the search button is pressed
     @IBAction func btnSearchClick(_ sender: UIButton) {
         self.jsonData.removeAll()
         search()
@@ -26,11 +27,17 @@ class Search: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tvwList.reloadData()
         btnSearch.setTitle("Next page", for: .normal)
     }
-    
+    // Get the row count of the table view and show an popup if there are no search results
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print("Getting row count!")
+        if self.jsonData.count == 0 && page > 0{
+            self.showToast(message: "Try different search terms")
+        }
         return jsonData.count
     }
+    // Populate the table view
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("Filling the table")
         let cell = tableView.dequeueReusableCell(withIdentifier: "tableItemThing", for: indexPath) as! ListCell
         let row = indexPath.row
         let url = jsonData[row]["Poster"] ?? "Movie X"
@@ -40,7 +47,7 @@ class Search: UIViewController, UITableViewDelegate, UITableViewDataSource {
         cell.decorate()
         return cell
     }
-    
+    // Search for the entered term on the OMDB api
     func search(){
         page = page + 1
         if let search = txtSearchTerm.text{
@@ -49,6 +56,8 @@ class Search: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 return
             }
             searchTerm = search
+            searchTerm = searchTerm.replacingOccurrences(of: " ", with: "+", options: .regularExpression, range: nil)
+            print(searchTerm)
         }else{
             return
         }
@@ -82,7 +91,7 @@ class ListCell: UITableViewCell{
     @IBAction func btnSaveMovie(_ sender: UIButton) {
         dbStuff = Database.database().reference()
         print("Saving movie")
-        dbStuff.child(userID).childByAutoId().setValue([ "Title": title, "Poster": link])
+        dbStuff.child("userData").child(userID).childByAutoId().setValue([ "Title": title, "Poster": link])
     }
     func decorate() {
         self.listTitle.text = title

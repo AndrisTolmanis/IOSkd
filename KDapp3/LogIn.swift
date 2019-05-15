@@ -9,6 +9,7 @@ class LogIn: UIViewController {
         super.viewDidLoad()
         
     }
+    // Authenticate the user in the app
     @IBAction func btnSignInClick(_ sender: UIButton) {
         let email:String = txtLoginEmail.text as! String
         let password:String = txtLoginPass.text as! String
@@ -18,7 +19,6 @@ class LogIn: UIViewController {
                 self?.showToast(message: "Sign In failed")
                 return
             } else {
-                
                 self?.showToast(message: "Sign In Success")
                 self?.performSegue(withIdentifier: "signedin", sender: nil)
             }

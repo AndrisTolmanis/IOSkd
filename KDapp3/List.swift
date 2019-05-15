@@ -2,35 +2,25 @@ import UIKit
 import SwiftyJSON
 import Firebase
 
-class List: UITableViewController {
+class List: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    @IBOutlet var twList: UITableView!
     var dbStuff: DatabaseReference!
     var jsonData = [[String:String]]()
     override func viewDidLoad() {
         super.viewDidLoad()
-        let userID = Auth.auth().currentUser!.uid
-        sleep(1)
-        self.dbStuff.child(userID).observe(.value){ snapshot in
-            let data = snapshot.value as? [String: AnyObject] ?? [:]
-            print(data)
-//            for (key,value) in data{
-//                if let title = value["Title"] as? String,
-//                    let link = value["Poster"] as? String{
-//                    self.jsonData.append(["Title": title, "Poster": link])
-//                }
-//            }
-        }
-//        dbStuff.child(userID).observeSingleEvent(of: .value, with: { (snapshot) in
-//            print(snapshot)
-//        }) { (error) in
-//            print(error.localizedDescription)
-//        }
-//        sleep(1)
+        self.twList.rowHeight = 100.0
+        dbStuff = Database.database().reference()
+        getData()
     }
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    // Set the number of rows for the table views
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print("Counting items")
         return jsonData.count
     }
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "listItemList", for: indexPath) as! ListCell
+    // Set the cells for the table view
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("Filling the list")
+        let cell = twList.dequeueReusableCell(withIdentifier: "userMoviesItem", for: indexPath) as! ListCellNoSave
         let row = indexPath.row
         let url = jsonData[row]["Poster"] ?? "Movie X"
         let title = jsonData[row]["Title"] ?? "Movie X"
@@ -38,6 +28,23 @@ class List: UITableViewController {
         cell.link = url
         cell.decorate()
         return cell
+    }
+    // Firebase request to retreive users movie list
+    func getData(){
+        let userID = Auth.auth().currentUser!.uid
+        dbStuff.child("userData").child(userID).observe(.value){ snapshot in
+            self.jsonData.removeAll()
+            let data = snapshot.value as? [String: AnyObject] ?? [:]
+            for (_,value) in data{
+                if let title = value["Title"] as? String,
+                    let link = value["Poster"] as? String{
+                    self.jsonData.append(["Title": title, "Poster": link])
+                }
+            }
+            print(self.jsonData)
+            print("Got the data!")
+            self.twList.reloadData()
+        }
     }
 }
 

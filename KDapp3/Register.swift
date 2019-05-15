@@ -6,11 +6,10 @@ class Register: UIViewController {
     @IBOutlet weak var txtPass1: UITextField!
     @IBOutlet weak var txtPass2: UITextField!
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
+    // Register the user using magical Firebase functions
     @IBAction func btnRegisterClick(_ sender: Any) {
         let email:String = txtEmail.text as! String
         let password:String = txtPass1.text as! String
@@ -28,15 +27,12 @@ class Register: UIViewController {
             }
         }
     }
-    
-    
 }
 
+// Popup toasts like in android... yeah, I know... HERESY!
 extension UIViewController {
-    
     func showToast(message : String) {
-        
-        let toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 75, y: self.view.frame.size.height-100, width: 150, height: 35))
+        let toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 150, y: self.view.frame.size.height-100, width: 300, height: 35))
         toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         toastLabel.textColor = UIColor.white
         toastLabel.textAlignment = .center;

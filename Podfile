@@ -10,5 +10,4 @@ target 'KDapp3' do
 	pod 'Firebase/Auth'
 	pod 'Firebase/Database'
 	pod 'SwiftyJSON', '~> 4.0'
-
 end
